@@ -12,17 +12,19 @@ services:
 
   db:
     container_name: db
+    restart: always
     image: postgres
     expose:
-      - "5455"
+      - 5455
     ports:
-      - "5455:5455"
+      - 5455:5455
     volumes:
-      - backendDB:/data/db
+      - db:/data/db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: LoggingDB
 
 volumes:
-  backendDB: 
+  db:
+    name: logging-api
