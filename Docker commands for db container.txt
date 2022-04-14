@@ -1,0 +1,11 @@
+1. (optional) Inspect available volumes as well as their paths in db container to place a db generating script into one of them:
+
+	docker inspect -f "{{ json .Mounts }}" bff | python -m json.tool
+
+2. Move a script (which is located in the same directory as docker-compose file) to a volume:
+
+	docker cp script.sql loggingapi_db_1:/var/lib/postgresql/data
+
+3. Execute the script with psql tool and get your db ready to work:
+
+	docker exec loggingapi_db_1 psql -U postgres -d LoggingDB -f /var/lib/postgresql/data/script.sql 

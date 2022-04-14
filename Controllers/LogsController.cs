@@ -1,5 +1,7 @@
 ﻿using LoggingAPI.Context;
+using LoggingAPI.Dapper_Repositories;
 using LoggingAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,41 +10,45 @@ namespace LoggingAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LogsController : ControllerBase
+    public class logsController : ControllerBase
     {
+        private readonly ActionLogRepository actionLogRepository;
+        private readonly BackendLogRepository backendLogRepository;
+        private readonly FrontendLogRepository frontendLogRepository;
 
-        private readonly LoggingContext db;
-        public LogsController(LoggingContext context)
+        public logsController(IConfiguration configuration)
         {
-            db = context;
+            actionLogRepository = new ActionLogRepository(configuration);
+            backendLogRepository = new BackendLogRepository(configuration);
+            frontendLogRepository = new FrontendLogRepository(configuration);
         }
 
         #region Frontend
 
-        [HttpGet]
-        [Route("Frontend")]
+        [HttpGet, Authorize]
+        [Route("frontend")]
         public async Task<IActionResult> FrontendGet()
         {
-            List<FrontendLog> frontendLogs;
+            IEnumerable<FrontendLog> frontendLogs;
             try
             {
-                frontendLogs = await db.FrontendLogs.ToListAsync();
+                frontendLogs = frontendLogRepository.FindAll();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+
             return Ok(frontendLogs);
         }
 
-        [HttpPost]
-        [Route("Frontend")]
+        [HttpPost, Authorize]
+        [Route("frontend")]
         public async Task<IActionResult> FrontendPost(FrontendLog frontendLog)
         {
             try
             {
-                await db.FrontendLogs.AddAsync(frontendLog);
-                await db.SaveChangesAsync();
+                frontendLogRepository.Add(frontendLog);
             }
             catch (Exception ex)
             {
@@ -55,30 +61,30 @@ namespace LoggingAPI.Controllers
 
         #region Backend
 
-        [HttpGet]
-        [Route("Backend")]
+        [HttpGet, Authorize]
+        [Route("backend")]
         public async Task<IActionResult> BackendGet()
         {
-            List<BackendLog> backendLogs;
+            IEnumerable<BackendLog> backendLogs;
             try
             {
-                backendLogs = await db.BackendLogs.ToListAsync();
+                backendLogs = backendLogRepository.FindAll();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+
             return Ok(backendLogs);
         }
 
-        [HttpPost]
-        [Route("Backend")]
+        [HttpPost, Authorize]
+        [Route("backend")]
         public async Task<IActionResult> BackendPost(BackendLog backendLog)
         {
             try
             {
-                await db.BackendLogs.AddAsync(backendLog);
-                await db.SaveChangesAsync();
+                backendLogRepository.Add(backendLog);
             }
             catch (Exception ex)
             {
@@ -91,30 +97,30 @@ namespace LoggingAPI.Controllers
 
         #region Action
 
-        [HttpGet]
-        [Route("Action")]
+        [HttpGet, Authorize]
+        [Route("action")]
         public async Task<IActionResult> ActionGet()
         {
-            List<ActionLog> actionLogs;
+            IEnumerable<ActionLog> actionLogs;
             try
             {
-                actionLogs = await db.ActionLogs.ToListAsync();
+                 actionLogs = actionLogRepository.FindAll();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+
             return Ok(actionLogs);
         }
 
-        [HttpPost]
-        [Route("Action")]
+        [HttpPost, Authorize]
+        [Route("action")]
         public async Task<IActionResult> ActionPost(ActionLog actionLog)
         {
             try
             {
-                await db.ActionLogs.AddAsync(actionLog);
-                await db.SaveChangesAsync();
+                actionLogRepository.Add(actionLog);
             }
             catch (Exception ex)
             {

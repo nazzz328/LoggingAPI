@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace LoggingAPI.Models
 {
@@ -11,9 +12,9 @@ namespace LoggingAPI.Models
         public string User_Id { get; set; }
         public ActionType Action { get; set; }
         [Column(TypeName = "jsonb")]
-        public int Prev_Value { get; set; }
+        public string Prev_Value { get; set; }
         [Column(TypeName = "jsonb")]
-        public int New_Value { get; set; }
+        public string New_Value { get; set; }
         [Column(TypeName = "varchar(100)")]
         public string Unit_Type { get; set; }
         public DateTime Date { get; set; }

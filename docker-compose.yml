@@ -1,28 +1,36 @@
 version: '3.4'
 
+networks:
+  loggingapi-dev:
+    driver: bridge 
+
 services:
   logging-api:
-    container_name: logging-api
-    build: .
-    restart: always
-    ports:
-      - "90:90"
+    image: logging-api:latest
     depends_on:
-      - db
-
-  db:
-    container_name: db
-    image: postgres
-    expose:
-      - "5455"
+      - "db"
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "5455:5455"
+      - "90:90"     
+    environment:
+      DB_CONNECTION_STRING: "Server=db;Database=LoggingDB;Port=5455;User Id=postgres;Password=nMydqJHhrAG84mXGLxkH"
+    networks:
+      - loggingapi-dev  
+  
+  db:
+    image: postgres:latest
+    ports:
+      - "5455"
+    restart: always
     volumes:
       - backendDB:/data/db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: LoggingDB
-
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "nMydqJHhrAG84mXGLxkH"
+      POSTGRES_DB: "LoggingDB"
+    networks:
+      - loggingapi-dev
 volumes:
-  backendDB: 
+  backendDB:

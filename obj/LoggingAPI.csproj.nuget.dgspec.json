@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Nazar\\Desktop\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj": {}
+    "C:\\Users\\Nazar\\Desktop\\Work\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Nazar\\Desktop\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj": {
+    "C:\\Users\\Nazar\\Desktop\\Work\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Nazar\\Desktop\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj",
+        "projectUniqueName": "C:\\Users\\Nazar\\Desktop\\Work\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj",
         "projectName": "LoggingAPI",
-        "projectPath": "C:\\Users\\Nazar\\Desktop\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj",
+        "projectPath": "C:\\Users\\Nazar\\Desktop\\Work\\LoggingAPI\\LoggingAPI\\LoggingAPI.csproj",
         "packagesPath": "C:\\Users\\Nazar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Nazar\\Desktop\\LoggingAPI\\LoggingAPI\\obj\\",
+        "outputPath": "C:\\Users\\Nazar\\Desktop\\Work\\LoggingAPI\\LoggingAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -47,6 +47,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.0.123, )"
+            },
+            "EFCore.AutomaticMigrations": {
+              "target": "Package",
+              "version": "[6.0.3.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[6.0.4, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[6.0.3, )"
@@ -63,6 +75,10 @@
               "target": "Package",
               "version": "[6.0.3, )"
             },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[6.0.3, )"
@@ -70,6 +86,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"
+            },
+            "Swashbuckle.AspNetCore.Filters": {
+              "target": "Package",
+              "version": "[7.0.2, )"
             }
           },
           "imports": [
