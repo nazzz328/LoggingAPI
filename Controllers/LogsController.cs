@@ -1,10 +1,8 @@
-﻿using LoggingAPI.Context;
-using LoggingAPI.Dapper_Repositories;
+﻿using LoggingAPI.Dapper_Repositories;
 using LoggingAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LoggingAPI.Controllers
 {

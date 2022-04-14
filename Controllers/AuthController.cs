@@ -1,9 +1,7 @@
-using LoggingAPI.Context;
 using LoggingAPI.Dapper_Repositories;
 using LoggingAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

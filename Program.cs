@@ -1,8 +1,3 @@
-using Management.Services;
-using LoggingAPI.Context;
-using Microsoft.EntityFrameworkCore;
-using EFCore.AutomaticMigrations;
-using LoggingAPI.Helpers;
 using LoggingAPI.Dapper_Repositories;
 using LoggingAPI.Models;
 using LoggingAPI.Controllers;

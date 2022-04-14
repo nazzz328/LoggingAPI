@@ -5,13 +5,10 @@ namespace LoggingAPI.Models
 {
     public class BackendLog
     {
-        [Key]
         public int Id { get; set; }
         public string Message { get; set; }
         public DateTime Date { get; set; }
-        [Column(TypeName = "varchar(50)")]
         public string User_Id { get; set; }
-        [Column(TypeName = "varchar(300)")]
         public string Source { get; set; }
     }
 }
