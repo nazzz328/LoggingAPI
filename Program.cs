@@ -6,12 +6,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using Dapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+SqlMapper.AddTypeHandler(typeof(Json), new JsonTypeHandler());
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -40,7 +43,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 var app = builder.Build();
 
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -48,10 +50,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// if (app.Environment.IsDevelopment())
-// {
-// app.UseHttpsRedirection();
-// }
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

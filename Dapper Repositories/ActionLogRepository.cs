@@ -1,8 +1,11 @@
 ﻿using Dapper;
 using LoggingAPI.Interfaces;
 using LoggingAPI.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 using System.Data;
+using System.Text.Json;
 
 namespace LoggingAPI.Dapper_Repositories
 {
@@ -21,12 +24,13 @@ namespace LoggingAPI.Dapper_Repositories
                 return new NpgsqlConnection(connectionString);
             }
         }
+
         public void Add(ActionLog item)
         {
             using (IDbConnection dbConnection = Connection)
             {
                 dbConnection.Open();
-                dbConnection.Execute("INSERT INTO actionlogs (user_id, action, prev_value, new_value, unit_type, date, source) VALUES (@User_Id, @Action, @Prev_Value, @New_Value, @Unit_Type, @Date, @Source)", item);
+                dbConnection.Execute("INSERT INTO actionlogs (user_id, action, prev_value, new_value, unit_type, date, source) VALUES (@User_Id, @Action, @Prev_Value::json, @New_Value::json, @Unit_Type, @Date, @Source)", item);
             }
         }
 

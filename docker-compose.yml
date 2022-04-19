@@ -25,7 +25,7 @@ services:
       - "5455"
     restart: always
     volumes:
-      - db:/data/db
+     - backendDB:/data/db
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "nMydqJHhrAG84mXGLxkH"

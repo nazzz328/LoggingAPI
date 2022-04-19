@@ -101,3 +101,5 @@ C:\Users\Nazar\Desktop\Work\LoggingAPI\LoggingAPI\bin\Debug\net6.0\Microsoft.Ext
 C:\Users\Nazar\Desktop\Work\LoggingAPI\LoggingAPI\bin\Debug\net6.0\Scrutor.dll
 C:\Users\Nazar\Desktop\Work\LoggingAPI\LoggingAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.dll
 C:\Users\Nazar\Desktop\Work\LoggingAPI\LoggingAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll
+C:\Users\Nazar\Desktop\Work\LoggingAPI\LoggingAPI\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\Nazar\Desktop\Work\LoggingAPI\LoggingAPI\bin\Debug\net6.0\Dapper.JsonTypeMapping.dll
