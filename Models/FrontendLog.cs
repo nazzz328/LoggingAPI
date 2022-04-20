@@ -9,7 +9,7 @@ namespace LoggingAPI.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; private set; }
         [BsonElement("message")]
         public string Message { get; set; }
         [BsonElement("date")]

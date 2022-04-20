@@ -9,7 +9,7 @@ namespace LoggingAPI.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public string? Id { get; private set; }
         [BsonElement("username")]
         public string Username { get; set; } = string.Empty;
         [BsonElement("passwordhash")]

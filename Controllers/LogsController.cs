@@ -1,10 +1,12 @@
-﻿
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using LoggingAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace LoggingAPI.Controllers
 {
@@ -25,7 +27,7 @@ namespace LoggingAPI.Controllers
 
         #region Frontend
 
-        [HttpGet]
+        [HttpGet, Authorize]
         [Route("frontend")]
         public async Task<IActionResult> FrontendGet()
         {
@@ -42,7 +44,7 @@ namespace LoggingAPI.Controllers
             return Ok(frontendLogs);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         [Route("frontend")]
         public async Task<IActionResult> FrontendPost(FrontendLog frontendLog)
         {
@@ -61,7 +63,7 @@ namespace LoggingAPI.Controllers
 
         #region Backend
 
-        [HttpGet]
+        [HttpGet, Authorize]
         [Route("backend")]
         public async Task<IActionResult> BackendGet()
         {
@@ -78,7 +80,7 @@ namespace LoggingAPI.Controllers
             return Ok(backendLogs);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         [Route("backend")]
         public async Task<IActionResult> BackendPost(BackendLog backendLog)
         {
@@ -97,7 +99,7 @@ namespace LoggingAPI.Controllers
 
         #region Action
 
-        [HttpGet]
+        [HttpGet, Authorize]
         [Route("action")]
         public async Task<IActionResult> ActionGet()
         {
@@ -114,19 +116,19 @@ namespace LoggingAPI.Controllers
             return Ok(actionLogs);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         [Route("action")]
         public async Task<IActionResult> ActionPost(ActionLog actionLog)
         {
             try
             {
-                actionLog.Prev_Value = actionLog.Prev_Value.ToJson();
-                actionLog.New_Value = actionLog.New_Value.ToJson();
+                actionLog.Prev_Value = System.Text.Json.JsonSerializer.Serialize(actionLog.Prev_Value);
+                actionLog.New_Value = System.Text.Json.JsonSerializer.Serialize(actionLog.New_Value);
                 await _actionLogsCollection.InsertOneAsync(actionLog);
-            }
+        }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+               return BadRequest(ex.Message);
             }
             return Ok();
         }

@@ -2,6 +2,7 @@ using LoggingAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -13,24 +14,39 @@ namespace LoggingAPI.Controllers
     [ApiController]
     public class authController : ControllerBase
     {
+        IMongoCollection<User> _usersCollection;
+        IConfiguration _configuration;
+
+        public authController(IMongoDatabase database, IConfiguration configuration)
+        {
+            _usersCollection = database.GetCollection<User>("users");
+            _configuration = configuration;
+        }
 
         [HttpPost]
         [Route("login")]
       public async Task <ActionResult<string>> Login (UserDto request)
         {
-
-            var user = new User();
-
-            if (user == null)
+            string token;
+            try
             {
-                return BadRequest("User not found.");
-            }
+                User user = await _usersCollection.Find(u => u.Username == request.Username).FirstOrDefaultAsync();
 
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                return BadRequest("Wrong password.");
+                if (user == null)
+                {
+                    return BadRequest("User not found.");
+                }
+
+                if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+                {
+                    return BadRequest("Wrong password.");
+                }
+                token = CreateToken(user);
             }
-            string token = CreateToken(user);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             return Ok(token);
         }
 
@@ -40,7 +56,6 @@ namespace LoggingAPI.Controllers
             {
                 new Claim(ClaimTypes.Name, user.Username)
             };
-            IConfiguration _configuration = null;
              var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("AppSettings:Token").Value));
 
@@ -60,18 +75,26 @@ namespace LoggingAPI.Controllers
         [Route("createAndAuthAdmin")]
         public async Task<ActionResult<User>> CreateAndLoginAdmin(UserDto request)
         {
-            List<User> users = new List<User>();
-            if (!users.Count().Equals(0))
+            string token;
+            try
             {
-                return BadRequest("Admin is already registered.");
+                var users = await _usersCollection.Find(_ => true).ToListAsync();
+                if (!users.Count().Equals(0))
+                {
+                    return BadRequest("Admin is already registered.");
+                }
+                User user = new User();
+                CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                user.Username = request.Username;
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                await _usersCollection.InsertOneAsync(user);
+                token = CreateToken(user);
             }
-            User user = new User();
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            user.Username = request.Username;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            //userRepository.Add(user);
-            string token = CreateToken(user);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             return Ok(token);
         }
 
