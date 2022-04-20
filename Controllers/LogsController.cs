@@ -1,8 +1,10 @@
-﻿using LoggingAPI.Dapper_Repositories;
+﻿
 using LoggingAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace LoggingAPI.Controllers
 {
@@ -10,27 +12,27 @@ namespace LoggingAPI.Controllers
     [ApiController]
     public class logsController : ControllerBase
     {
-        private readonly ActionLogRepository actionLogRepository;
-        private readonly BackendLogRepository backendLogRepository;
-        private readonly FrontendLogRepository frontendLogRepository;
+        IMongoCollection<FrontendLog> _frontendLogsCollection;
+        IMongoCollection<BackendLog> _backendLogsCollection;
+        IMongoCollection<ActionLog> _actionLogsCollection;
 
-        public logsController(IConfiguration configuration)
+        public logsController(IMongoDatabase database)
         {
-            actionLogRepository = new ActionLogRepository(configuration);
-            backendLogRepository = new BackendLogRepository(configuration);
-            frontendLogRepository = new FrontendLogRepository(configuration);
+            _frontendLogsCollection = database.GetCollection<FrontendLog>("frontendlogs");
+            _backendLogsCollection = database.GetCollection<BackendLog>("backendlogs");
+            _actionLogsCollection = database.GetCollection<ActionLog>("actionlogs");
         }
 
         #region Frontend
 
-        [HttpGet, Authorize]
+        [HttpGet]
         [Route("frontend")]
         public async Task<IActionResult> FrontendGet()
         {
-            IEnumerable<FrontendLog> frontendLogs;
+            List<FrontendLog> frontendLogs;
             try
             {
-                frontendLogs = frontendLogRepository.FindAll();
+                frontendLogs = await _frontendLogsCollection.Find(_ => true).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -40,13 +42,13 @@ namespace LoggingAPI.Controllers
             return Ok(frontendLogs);
         }
 
-        [HttpPost, Authorize]
+        [HttpPost]
         [Route("frontend")]
         public async Task<IActionResult> FrontendPost(FrontendLog frontendLog)
         {
             try
             {
-                frontendLogRepository.Add(frontendLog);
+                await _frontendLogsCollection.InsertOneAsync(frontendLog);
             }
             catch (Exception ex)
             {
@@ -59,14 +61,14 @@ namespace LoggingAPI.Controllers
 
         #region Backend
 
-        [HttpGet, Authorize]
+        [HttpGet]
         [Route("backend")]
         public async Task<IActionResult> BackendGet()
         {
-            IEnumerable<BackendLog> backendLogs;
+            List<BackendLog> backendLogs;
             try
             {
-                backendLogs = backendLogRepository.FindAll();
+                backendLogs = await _backendLogsCollection.Find(_ => true).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -76,13 +78,13 @@ namespace LoggingAPI.Controllers
             return Ok(backendLogs);
         }
 
-        [HttpPost, Authorize]
+        [HttpPost]
         [Route("backend")]
         public async Task<IActionResult> BackendPost(BackendLog backendLog)
         {
             try
             {
-                backendLogRepository.Add(backendLog);
+                await _backendLogsCollection.InsertOneAsync(backendLog);
             }
             catch (Exception ex)
             {
@@ -95,14 +97,14 @@ namespace LoggingAPI.Controllers
 
         #region Action
 
-        [HttpGet, Authorize]
+        [HttpGet]
         [Route("action")]
         public async Task<IActionResult> ActionGet()
         {
-            IEnumerable<ActionLog> actionLogs;
+            List<ActionLog> actionLogs;
             try
             {
-                 actionLogs = actionLogRepository.FindAll();
+                actionLogs = await _actionLogsCollection.Find(_ => true).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -112,13 +114,15 @@ namespace LoggingAPI.Controllers
             return Ok(actionLogs);
         }
 
-        [HttpPost, Authorize]
+        [HttpPost]
         [Route("action")]
         public async Task<IActionResult> ActionPost(ActionLog actionLog)
         {
             try
             {
-                actionLogRepository.Add(actionLog);
+                actionLog.Prev_Value = actionLog.Prev_Value.ToJson();
+                actionLog.New_Value = actionLog.New_Value.ToJson();
+                await _actionLogsCollection.InsertOneAsync(actionLog);
             }
             catch (Exception ex)
             {

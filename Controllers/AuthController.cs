@@ -1,4 +1,3 @@
-using LoggingAPI.Dapper_Repositories;
 using LoggingAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,21 +13,13 @@ namespace LoggingAPI.Controllers
     [ApiController]
     public class authController : ControllerBase
     {
-       public readonly UserRepository userRepository;
-       private readonly IConfiguration _configuration;
-
-        public authController (IConfiguration configuration)
-        {
-            userRepository = new UserRepository (configuration);
-            _configuration = configuration;
-        }
 
         [HttpPost]
         [Route("login")]
       public async Task <ActionResult<string>> Login (UserDto request)
         {
 
-            var user = userRepository.FindByUsername (request);
+            var user = new User();
 
             if (user == null)
             {
@@ -49,8 +40,8 @@ namespace LoggingAPI.Controllers
             {
                 new Claim(ClaimTypes.Name, user.Username)
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            IConfiguration _configuration = null;
+             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("AppSettings:Token").Value));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
@@ -69,7 +60,7 @@ namespace LoggingAPI.Controllers
         [Route("createAndAuthAdmin")]
         public async Task<ActionResult<User>> CreateAndLoginAdmin(UserDto request)
         {
-            IEnumerable<User> users = userRepository.FindAll();
+            List<User> users = new List<User>();
             if (!users.Count().Equals(0))
             {
                 return BadRequest("Admin is already registered.");
@@ -79,7 +70,7 @@ namespace LoggingAPI.Controllers
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            userRepository.Add(user);
+            //userRepository.Add(user);
             string token = CreateToken(user);
             return Ok(token);
         }

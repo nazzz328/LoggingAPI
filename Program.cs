@@ -1,4 +1,3 @@
-using LoggingAPI.Dapper_Repositories;
 using LoggingAPI.Models;
 using LoggingAPI.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,14 +6,20 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Dapper;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+builder.Services.AddSingleton<IMongoDatabase>(s => 
+{
+    var uri = s.GetRequiredService<IConfiguration>()["DBInfo:ConnectionString"];
+    var client = new MongoClient(uri);
+    var database = client.GetDatabase("mongo");
+    return database;
+});
 
-SqlMapper.AddTypeHandler(typeof(Json), new JsonTypeHandler());
 
 builder.Services.AddEndpointsApiExplorer();
 

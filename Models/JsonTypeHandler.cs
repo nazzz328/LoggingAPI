@@ -11,7 +11,7 @@ namespace LoggingAPI.Models
             parameter.Value = JsonConvert.SerializeObject(value);
         }
 
-        public object Parse(Type destinationType, object value)
+        public object? Parse(Type destinationType, object? value)
         {
             return JsonConvert.DeserializeObject(value as string, destinationType);
         }
