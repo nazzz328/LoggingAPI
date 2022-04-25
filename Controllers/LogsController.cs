@@ -101,11 +101,36 @@ namespace LoggingAPI.Controllers
 
         [HttpGet, Authorize]
         [Route("action")]
-        public async Task<IActionResult> ActionGet()
+        public async Task<IActionResult> ActionGet([FromQuery] string? unitType, [FromQuery] int? unitId)
         {
             List<ActionLog> actionLogs;
+            string findQuery = $"{{$or: [{{prev_value: '{{\"id\":{unitId}}}'}}, {{new_value: '{{\"id\":{unitId}}}'}}]}}";
+
             try
             {
+                if (!string.IsNullOrEmpty(unitType))
+                {
+                    actionLogs = await _actionLogsCollection
+                        .Find(a => a.Unit_Type == unitType)
+                        .ToListAsync();
+
+                    if (actionLogs == null)
+                    {
+                        return Ok(actionLogs);
+                    }
+                    return Ok(actionLogs);
+                }
+
+                if (!(unitId == null))
+                {
+                    actionLogs = await _actionLogsCollection.Find(findQuery).ToListAsync();
+                    if (actionLogs == null)
+                    {
+                        return Ok(actionLogs);
+                    }
+                    return Ok(actionLogs);
+                }
+
                 actionLogs = await _actionLogsCollection.Find(_ => true).ToListAsync();
             }
             catch (Exception ex)

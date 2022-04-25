@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using Dapper;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
