@@ -101,37 +101,57 @@ namespace LoggingAPI.Controllers
 
         [HttpGet, Authorize]
         [Route("action")]
-        public async Task<IActionResult> ActionGet([FromQuery] string? unitType, [FromQuery] int? unitId)
+        public async Task<IActionResult> ActionGet([FromQuery] string? unitType, [FromQuery] int? unitId, [FromQuery] string? dateFrom, [FromQuery] string? dateTo, [FromQuery] string? user_id)
         {
             List<ActionLog> actionLogs;
-            string findQuery = $"{{$or: [{{prev_value: '{{\"id\":{unitId}}}'}}, {{new_value: '{{\"id\":{unitId}}}'}}]}}";
+
+            // unit_id filtering condition is passed to the filter as a raw MQL query since the condition is complicated and the filtering is done within the json-type Prev_Value and New_Value fields
+
+            string findByIdQuery = $"{{$or: [{{prev_value: '{{\"id\":{unitId}}}'}}, {{new_value: '{{\"id\":{unitId}}}'}}]}}";
 
             try
             {
-                if (!string.IsNullOrEmpty(unitType))
-                {
-                    actionLogs = await _actionLogsCollection
-                        .Find(a => a.Unit_Type == unitType)
-                        .ToListAsync();
+                var builder = Builders<ActionLog>.Filter;
+                var filter = builder.Empty;
 
-                    if (actionLogs == null)
-                    {
-                        return Ok(actionLogs);
-                    }
-                    return Ok(actionLogs);
+                #region Checking if query params are not empty and adding them to the filter
+
+                if (!string.IsNullOrWhiteSpace(unitType))
+                {
+                    var unitTypeFilter = builder.Eq(x => x.Unit_Type, unitType);
+                    filter &= unitTypeFilter;
                 }
 
-                if (!(unitId == null))
+                if (!string.IsNullOrWhiteSpace(dateFrom))
                 {
-                    actionLogs = await _actionLogsCollection.Find(findQuery).ToListAsync();
-                    if (actionLogs == null)
-                    {
-                        return Ok(actionLogs);
-                    }
-                    return Ok(actionLogs);
+                    DateTime parsedDateFrom;
+                    DateTime.TryParse(dateFrom, out parsedDateFrom);
+                    var dateFromFilter = builder.Gt(x=> x.Date, parsedDateFrom);
+                    filter &= dateFromFilter;
                 }
 
-                actionLogs = await _actionLogsCollection.Find(_ => true).ToListAsync();
+                if (!string.IsNullOrWhiteSpace(dateTo))
+                {
+                    DateTime parsedDateTo;
+                    DateTime.TryParse(dateTo, out parsedDateTo);
+                    var dateToFilter = builder.Lt(x => x.Date, parsedDateTo);
+                    filter &= dateToFilter;
+                }
+
+                if (!string.IsNullOrWhiteSpace(user_id))
+                {
+                    var userIdFilter = builder.Eq(x => x.User_Id, user_id);
+                    filter &= userIdFilter;
+                }
+
+                if (unitId.HasValue)
+                {
+                    filter &= findByIdQuery;
+                }
+
+                #endregion
+
+                actionLogs = await _actionLogsCollection.Find(filter).ToListAsync();
             }
             catch (Exception ex)
             {
